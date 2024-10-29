@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors"
 import pino from 'pino-http';
-import {env} from "./utils/env.js"
+import { env } from "./utils/env.js"
+
+// import ContactCollection from "./db/models/Contact.js" 
+import * as contactServices from "./services/contacts.js"  // замість ContactCollection імпортуємо всю логіку з файлу, де він буде шукати певний запит
 
 
 const PORT = Number(env(`PORT`, `3000`))
@@ -18,12 +21,37 @@ export const setupServer = () => {
            target: 'pino-pretty',
          },
        }),
-    );
+  );
+  //  app.use(logger)
     
 
- app.get(`/`, (req, res) => {
-   res.json({ massage: 'Hello world' });
- });
+  app.get(`/contacts`, async (req, res) => {
+    const data = await contactServices.getContacts();
+    res.json({
+      stasus: 200,
+      message: "Successfull find contacts",
+      data,
+    })
+  //  res.json({ massage: 'Hello hw-2' });  необхідно було для перевірки запуску сервера
+  });
+  
+  app.get(`/contacts/:id`, async (req, res) => {
+    console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
+    const { id } = req.params;
+    const data = await contactServices.getContactById(id);
+          if (!data) {
+              res.status(404).json({
+              message: `Contact id= ${id}not found`,
+              });
+          }
+    
+    res.json({
+      stasus: 200,
+      message: 'Contact successfull find',
+      data,
+    });
+    
+  });
 
  //   опрацювання 404 та 500 помилки, коли не знайдено шлях
  app.use('*', (req, res, next) => {
