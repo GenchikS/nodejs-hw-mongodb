@@ -3,8 +3,8 @@ import cors from "cors"
 import pino from 'pino-http';
 import { env } from "./utils/env.js"
 
-// import ContactCollection from "./db/models/Contact.js" 
-import {getContacts, getContactById} from "./services/contacts.js"  // замість ContactCollection імпортуємо всю логіку з файлу, де він буде шукати певний запит
+import ContactCollection from "./db/models/Contact.js" 
+// import {getContacts, getContactById} from "./services/contacts.js"  // замість ContactCollection імпортуємо всю логіку з файлу, де він буде шукати певний запит
 
 
 const PORT = Number(env(`PORT`, `3000`))
@@ -26,7 +26,7 @@ export const setupServer = () => {
     
 
   app.get(`/contacts`, async (req, res) => {
-    const data = await getContacts();
+    const data = await ContactCollection.getContacts();
     res.json({
       stasus: 200,
       message: "Successfull find contacts",
@@ -37,7 +37,7 @@ export const setupServer = () => {
   });
   
   app.get(`/contacts/:id`, async (req, res) => {
-    console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
+    // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
     const { id } = req.params;
     
     if (id.length !== 24) {
@@ -48,7 +48,7 @@ export const setupServer = () => {
       return;
     }
     
-    const data = await getContactById(id);
+    const data = await ContactCollection.getContactById(id);
 
     res.json({
       stasus: 200,
