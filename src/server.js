@@ -27,7 +27,7 @@ export const setupServer = () => {
 
   app.get(`/contacts`, async (req, res) => {
     const data = await getContacts();
-    res.json({
+    res.status(200).json({
       stasus: 200,
       message: "Successfull find contacts",
       data,
@@ -37,29 +37,28 @@ export const setupServer = () => {
   });
   
   app.get(`/contacts/:id`, async (req, res) => {
-    // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
+    console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
     const { id } = req.params;
-    
-    if (id.length !== 24) {
-      // console.log(id.length); //  перевірка довжини ID
-      res.status(404).json({
-        message: `Contact id= ${id} not found`,
-      });
-      return;
-    }
-    
     const data = await getContactById(id);
+    
+    if (!data) {
+      return res.status(404).json({
+        stasus: 404,
+        message: `Contact id=${id} not found`,
+      });
+      
+    }
 
     res.json({
       stasus: 200,
       message: 'Contact successfull find',
       data,
     });
-    
+    return data;
   });
 
  //   опрацювання 404 та 500 помилки, коли не знайдено шлях
- app.use('*', (req, res, next) => {
+ app.use((req, res) => {
    res.status(404).json({
      message:'Not found',
    });
