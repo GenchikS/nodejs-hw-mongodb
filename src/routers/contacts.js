@@ -8,4 +8,6 @@ contactsRouters.get(`/`, contactsControllers.getContactsController);  //  нео
 
 contactsRouters.get(`/:id`, contactsControllers.getContactByIdController);
 
+contactsRouters.post(`/`, contactsControllers.postContactController)
+
 export default contactsRouters;

@@ -1,4 +1,4 @@
-import { getContacts, getContactById } from '../services/contacts.js'; //  логіка пошуку колекції
+import { getContacts, getContactById, postContacts } from '../services/contacts.js'; //  логіка пошуку колекції
 import createHttpError from "http-errors"
 
 export const getContactsController = async (req, res) => {
@@ -27,13 +27,11 @@ export const getContactByIdController = async (req, res) => {
   
   try {
     // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-    
+    const data = await getContactById(id);
 
-    if (id.length !== 24) {
+    if (!data) {
       throw createHttpError(404, `Contact id= ${id} not found`);
     }
-
-    const data = await getContactById(id);
 
     res.json({
       stasus: 200,
@@ -41,11 +39,27 @@ export const getContactByIdController = async (req, res) => {
       data,
     });
   } catch (error) {
-    // const { status = 500, message = `Something went wrong` } = error;  // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
-     res.status(500).json({
-     message: 'Something went wrong',
-     error: error.message,
-   
-    });
+    const { status = 500, message = "Something went wrong" } = error; //"" - лише такі // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
+      res.status(status).json({
+      status,
+       message,
+      });
   }
 };
+
+export const postContactController = async (req, res) => {
+  try {
+    const data = await postContacts(req.body);
+    res.json({
+      status: 201,
+		  message: "Successfully created a contact!",
+		  data: data,
+    })
+  } catch (error) {
+    const { status = 500, message = "Something went wrong" } = error;
+    req.stasus(status).json({
+      status,
+      message
+    })
+  }
+}
