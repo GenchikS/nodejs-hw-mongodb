@@ -1,4 +1,4 @@
-import { getContacts, getContactById, postContacts } from '../services/contacts.js'; //  логіка пошуку колекції
+import { getContacts, getContactById, postContacts, patchContact } from '../services/contacts.js'; //  логіка пошуку колекції
 import createHttpError from "http-errors"
 
 export const getContactsController = async (req, res) => {
@@ -48,6 +48,7 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const postContactController = async (req, res) => {
+  // console.log(req.body)   // перевірка
   try {
     const data = await postContacts(req.body);
     res.json({
@@ -63,3 +64,15 @@ export const postContactController = async (req, res) => {
     })
   }
 }
+
+export const patchContactController = async (req, res) => {
+  const { id } = req.params;
+  const data = await patchContact(id, req.body);
+  if (!data) throw createHttpError(404, `Not found`); 
+      res.json({
+        status: 200,
+        message: `Successfully patched a contact!`,
+        data,
+      })
+    }
+ 
