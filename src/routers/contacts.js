@@ -11,7 +11,7 @@ contactsRouters.get(
 );  //  необхідно звернутися до певной ф-ції маршруту  виклик ф-ції не робиться
 
 contactsRouters.get(
-  `/:id`,
+  `/:contactId`,
   ctrlWrapper(contactsControllers.getContactByIdController),
 );
 
@@ -20,6 +20,14 @@ contactsRouters.post(
   ctrlWrapper(contactsControllers.postContactController),
 );
 
-contactsRouters.patch(`/:id`, ctrlWrapper(contactsControllers.patchContactController))
+contactsRouters.patch(
+  `/:contactId`,
+  ctrlWrapper(contactsControllers.patchContactController),
+);
+
+contactsRouters.delete(
+  `/:contactId`,
+  ctrlWrapper(contactsControllers.deleteContactByIdController),
+);
 
 export default contactsRouters;

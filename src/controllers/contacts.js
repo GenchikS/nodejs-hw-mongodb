@@ -1,4 +1,4 @@
-import { getContacts, getContactById, postContacts, patchContact } from '../services/contacts.js'; //  логіка пошуку колекції
+import { getContacts, getContactById, postContacts, patchContact, deleteContactById } from '../services/contacts.js'; //  логіка пошуку колекції
 import createHttpError from "http-errors"
 
 export const getContactsController = async (req, res) => {
@@ -23,14 +23,14 @@ export const getContactsController = async (req, res) => {
 
 export const getContactByIdController = async (req, res) => {
   
-  const { id } = req.params;
+  const { contactId } = req.params;
   
   try {
     // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-    const data = await getContactById(id);
+    const data = await getContactById(contactId);
 
     if (!data) {
-      throw createHttpError(404, `Contact id= ${id} not found`);
+      throw createHttpError(404, `Contact id= ${contactId} not found`);
     }
 
     res.json({
@@ -66,13 +66,23 @@ export const postContactController = async (req, res) => {
 }
 
 export const patchContactController = async (req, res) => {
-  const { id } = req.params;
-  const data = await patchContact(id, req.body);
+  const { contactId } = req.params;
+  const data = await patchContact(contactId, req.body);
   if (!data) throw createHttpError(404, `Not found`); 
       res.json({
         status: 200,
         message: `Successfully patched a contact!`,
         data,
       })
-    }
+}
+
+export const deleteContactByIdController = async (req, res) => {
+  const { contactId } = req.params;
+  const data = await deleteContactById(contactId);
+  if (!data) {throw createHttpError(404, `Contact id= ${contactId} not found`)}
+
+  res.status(204).json();
+ 
+};
+
  
