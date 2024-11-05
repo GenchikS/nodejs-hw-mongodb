@@ -51,10 +51,10 @@ export const postContactController = async (req, res) => {
   // console.log(req.body)   // перевірка
   try {
     const data = await postContacts(req.body);
-    res.json({
+    res.status(201).json({
       status: 201,
 		  message: "Successfully created a contact!",
-		  data: data,
+		  data,
     })
   } catch (error) {
     const { status = 500, message = "Something went wrong" } = error;
@@ -67,6 +67,7 @@ export const postContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
+  // console.log(contactId);
   const data = await patchContact(contactId, req.body);
   if (!data) throw createHttpError(404, `Not found`); 
       res.json({
@@ -78,11 +79,25 @@ export const patchContactController = async (req, res) => {
 
 export const deleteContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const data = await deleteContactById(contactId);
-  if (!data) {throw createHttpError(404, `Contact id= ${contactId} not found`)}
+  try {
+    const data = await deleteContactById(contactId);
 
-  res.status(204).json();
- 
+    console.log(contactId);
+    console.log(data);
+
+    if (!data) {
+      throw createHttpError(404, `Contact id= ${contactId} not found`);
+    }
+
+    res.status(204).json();
+  }
+  catch (error) {
+    const { status = 500, message = 'Something went wrong' } = error; //"" - лише такі // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
+    res.status(status).json({
+      status,
+      message,
+    });
+  }
 };
 
  
