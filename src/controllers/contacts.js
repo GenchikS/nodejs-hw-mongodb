@@ -67,14 +67,26 @@ export const postContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
-  // console.log(contactId);
-  const data = await patchContact(contactId, req.body);
-  if (!data) throw createHttpError(404, `Not found`); 
-      res.json({
-        status: 200,
-        message: `Successfully patched a contact!`,
-        data,
-      })
+  console.log(contactId);
+  try {
+    const data = await patchContact(contactId, req.body);
+
+    if (!data) {
+      throw createHttpError(404, `Not found`);
+    }
+    res.json({
+      status: 200,
+      message: `Successfully patched a contact!`,
+      data,
+    });
+  } catch (error) {
+    const { status = 500, message = 'Something went wrong' } = error;  // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
+    res.status(status).json({
+      status,
+      message,
+    });
+  }
+  
 }
 
 export const deleteContactByIdController = async (req, res) => {
@@ -82,8 +94,8 @@ export const deleteContactByIdController = async (req, res) => {
   try {
     const data = await deleteContactById(contactId);
 
-    console.log(contactId);
-    console.log(data);
+    // console.log(contactId);
+    // console.log(data);
 
     if (!data) {
       throw createHttpError(404, `Contact id= ${contactId} not found`);
