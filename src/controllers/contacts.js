@@ -5,11 +5,12 @@ import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 export const getContactsController = async (req, res) => {
   // console.log(req.query);  //  значення query з параметрами sourch
   const { page, perPage } = parsePaginationParams(req.query); //  витягуємо параметри page та perPage
-  console.log(`page`, page); //  перевірка
-  console.log(`perPage`, perPage); //  перевірка
+  // console.log(`page`, page); //  перевірка
+  // console.log(`perPage`, perPage); //  перевірка
 
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
   const data = await getContacts({ page, perPage }); //  якщо и try сталася помилка, то переходить на catch error
+  
   res.json({
     stasus: 200,
     message: 'Successfull find contacts',
