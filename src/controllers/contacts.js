@@ -12,12 +12,16 @@ export const getContactsController = async (req, res) => {
   // console.log(`perPage`, perPage); //  перевірка
 
   const { sortBy, sortOrder } = parseSortParams(req.query, sortByList);
-
   // console.log(sortBy);  // перевірка
   // console.log(sortOrder);  // перевірка
 
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
-  const data = await getContacts({ page, perPage, sortBy, sortOrder }); //  якщо и try сталася помилка, то переходить на catch error
+  const data = await getContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+  }); //  якщо и try сталася помилка, то переходить на catch error
 
   res.json({
     stasus: 200,
