@@ -17,13 +17,13 @@ export const setupServer = () => {
   app.use(express.json());
   app.use(cors());
 
-  app.use(
-    pino({
-      transport: {
-        target: 'pino-pretty',
-      },
-    }),
-  );
+  // app.use(
+  //   pino({
+  //     transport: {
+  //       target: 'pino-pretty',
+  //     },
+  //   }),
+  // );
   //  app.use(logger)
 
   app.use(`/contacts`, contactsRouters); //  при запиті `/contacts` шукати обробник в contactsRouters

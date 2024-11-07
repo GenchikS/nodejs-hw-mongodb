@@ -1,75 +1,61 @@
 import { getContacts, getContactById, postContacts, patchContact, deleteContactById } from '../services/contacts.js'; //  логіка пошуку колекції
 import createHttpError from "http-errors"
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 
 export const getContactsController = async (req, res) => {
+  // console.log(req.query);  //  значення query з параметрами sourch
+  const { page, perPage } = parsePaginationParams(req.query); //  витягуємо параметри page та perPage
+  console.log(`page`, page); //  перевірка
+  console.log(`perPage`, perPage); //  перевірка
+
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
-  try {
-    const data = await getContacts();  //  якщо и try сталася помилка, то переходить на catch error
-    res.json({
-      stasus: 200,
-      message: 'Successfull find contacts',
-      data,
-    });
-  } catch (error) {
-    res.stasus(500).json({
-      status: 500,
-      message: 'Something went wrong',
-      error: error.message,
-    });
-  }
-  
+  const data = await getContacts({ page, perPage }); //  якщо и try сталася помилка, то переходить на catch error
+  res.json({
+    stasus: 200,
+    message: 'Successfull find contacts',
+    data,
+  });
+
   //  res.json({ massage: 'Hello hw-2' });  необхідно було для перевірки запуску сервера
 };
 
 export const getContactByIdController = async (req, res) => {
+  const { id } = req.params;
+//  console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
   
-  const { contactId } = req.params;
-  
-  try {
-    // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-    const data = await getContactById(contactId);
+  const data = await getContactById(id);
 
     if (!data) {
-      throw createHttpError(404, `Contact id= ${contactId} not found`);
+      throw createHttpError(404, `Contact id= ${id} not found`);
     }
 
     res.json({
       stasus: 200,
       message: 'Contact successfull find',
-      data,
+      data: data,
     });
-  } catch (error) {
-    const { status = 500, message = "Something went wrong" } = error; //"" - лише такі // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
-      res.status(status).json({
-      status,
-       message,
-      });
-  }
+  
 };
 
 export const postContactController = async (req, res) => {
   // console.log(req.body)   // перевірка
-  try {
-    const data = await postContacts(req.body);
-    res.status(201).json({
-      status: 201,
-		  message: "Successfully created a contact!",
-		  data,
-    })
-  } catch (error) {
-    const { status = 500, message = "Something went wrong" } = error;
-    req.stasus(status).json({
-      status,
-      message
-    })
-  }
+  // const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
+  // console.log(validateResult);
+  
+  const data = await postContacts(req.body);
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created a contact!',
+    data,
+  });
 }
 
 export const patchContactController = async (req, res) => {
-  const { contactId } = req.params;
-  console.log(contactId);
+
+  const { id } = req.params;
+  // console.log(contactId);
   try {
-    const data = await patchContact(contactId, req.body);
+    const data = await patchContact(id, req.body);
 
     if (!data) {
       throw createHttpError(404, `Not found`);
@@ -80,25 +66,24 @@ export const patchContactController = async (req, res) => {
       data,
     });
   } catch (error) {
-    const { status = 500, message = 'Something went wrong' } = error;  // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
+    const { status = 500, message = 'Something went wrong' } = error; // якщо помилка 500, то викидає помилку 500. Якщо прилітає 404, то зберігається 404
     res.status(status).json({
       status,
       message,
     });
   }
-  
 }
 
 export const deleteContactByIdController = async (req, res) => {
-  const { contactId } = req.params;
+  const { id } = req.params;
   try {
-    const data = await deleteContactById(contactId);
+    const data = await deleteContactById(id);
 
     // console.log(contactId);
     // console.log(data);
 
     if (!data) {
-      throw createHttpError(404, `Contact id= ${contactId} not found`);
+      throw createHttpError(404, `Contact id= ${id} not found`);
     }
 
     res.status(204).json();
