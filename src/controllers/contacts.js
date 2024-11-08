@@ -1,8 +1,6 @@
 import { getContacts, getContactById, postContacts, patchContact, deleteContactById } from '../services/contacts.js'; //  логіка пошуку колекції
-// import createHttpError from "http-errors";
 import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-
 import { sortByList } from '../db/models/Contact.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 
@@ -22,27 +20,22 @@ export const getContactsController = async (req, res) => {
     perPage,
     sortBy,
     sortOrder,
-  }); //  якщо и try сталася помилка, то переходить на catch error
-
+  });
   res.json({
     stasus: 200,
     message: 'Successfull find contacts',
     data,
   });
-
-  //  res.json({ massage: 'Hello hw-2' });  необхідно було для перевірки запуску сервера
 };
 
 export const getContactByIdController = async (req, res) => {
   const { id } = req.params;
-//  console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-  
+  //  console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
   const data = await getContactById(id);
   if (!data) {  //  умова якщо null 
       // console.log(data);
       throw createHttpError(404, `Contact id= ${id} not found`);
     }
-
     res.json({
       stasus: 200,
       message: 'Contact successfull find',
@@ -67,9 +60,7 @@ export const postContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
   // console.log(contactId);
-  // try {
     const data = await patchContact(id, req.body);
-
     if (!data) {
       throw createHttpError(404, `Not found`);
     }
@@ -84,10 +75,8 @@ export const patchContactController = async (req, res) => {
 export const deleteContactByIdController = async (req, res) => {
   const { id } = req.params;
     const data = await deleteContactById(id);
-
     // console.log(contactId);
     // console.log(data);
-
     if (!data) {
       throw createHttpError(404, `Contact id= ${id} not found`);
     }
