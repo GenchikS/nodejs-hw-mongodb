@@ -1,5 +1,6 @@
 import { getContacts, getContactById, postContacts, patchContact, deleteContactById } from '../services/contacts.js'; //  логіка пошуку колекції
-import createHttpError from "http-errors"
+// import createHttpError from "http-errors";
+import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 
 import { sortByList } from '../db/models/Contact.js';
@@ -37,8 +38,8 @@ export const getContactByIdController = async (req, res) => {
 //  console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
   
   const data = await getContactById(id);
-
-    if (!data) {
+  if (!data) {  //  умова якщо null 
+      // console.log(data);
       throw createHttpError(404, `Contact id= ${id} not found`);
     }
 
@@ -56,7 +57,7 @@ export const postContactController = async (req, res) => {
   // console.log(validateResult);
   
   const data = await postContacts(req.body);
-  res.status(201).json({
+    res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
     data,
