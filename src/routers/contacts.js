@@ -22,6 +22,7 @@ contactsRouters.post(
   validateBody(contactPostSchema),
   ctrlWrapper(contactsControllers.postContactController),
 );
+// validateBody перевіряє схему запиту та валідує
 
 contactsRouters.patch(
   `/:id`,

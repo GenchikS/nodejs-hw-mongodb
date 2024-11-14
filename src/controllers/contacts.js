@@ -41,7 +41,6 @@ export const getContactByIdController = async (req, res) => {
       message: 'Contact successfull find',
       data: data,
     });
-  
 };
 
 export const postContactController = async (req, res) => {
@@ -70,7 +69,6 @@ export const patchContactController = async (req, res) => {
       data,
     });
 };
-
 
 export const deleteContactByIdController = async (req, res) => {
   const { id } = req.params;

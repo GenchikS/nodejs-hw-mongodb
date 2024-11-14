@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
 import { typeContacts } from "../../constants/contacts.js";
+import { handleSaveError, setUpdataSettings } from "./hooks.js";
+import { emailRegex } from "../../constants/authUsers.js";
 
 const contactSchema = new Schema(
   {
@@ -13,7 +15,8 @@ const contactSchema = new Schema(
     },
     email: {
       type: String,
-      require: false
+      match: emailRegex,
+      require: false,
     },
     isFavourite: {
       type: Boolean,
@@ -24,7 +27,7 @@ const contactSchema = new Schema(
       // enum: [`work`, `home`, `personal`], //  можна винисти в константу, приклад нище
       enum: typeContacts,
       default: `personal`,
-      required: true
+      required: true,
     },
   },
   {
@@ -32,6 +35,10 @@ const contactSchema = new Schema(
     versionKey: false, //  видалення versionKey
   },
 );
+
+contactSchema.post(`save`, handleSaveError) //  post означає. що передати після. save операція з базою
+contactSchema.pre(`findOneAndUpdate`, setUpdataSettings);  //  обробка помилки при оновленні
+contactSchema.post(`save`, handleSaveError);  //  обробка помилки, якщо сталася після оновлення
 
 
 export const sortByList = ['name'];
