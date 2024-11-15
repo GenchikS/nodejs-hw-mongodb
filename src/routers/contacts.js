@@ -5,8 +5,11 @@ import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import { validateBody } from "../utils/validateBody.js";
 import { contactPatchSchema, contactPostSchema } from "../validation/contacts.js";
 import { isValidId } from "../middlewares/isValidId.js";
+import { authenticate } from "../middlewares/authenticate.js";
 
 const contactsRouters = Router();  //  створення пустого маршруту
+
+contactsRouters.use(authenticate); // можна прописати authenticate в кожному маршруту. Або краще винести в мідлвару use. Спочатку проходить запит через цю мідлвару, потім вже шукаються необхідні маршрути
 
 contactsRouters.get(
   `/`,

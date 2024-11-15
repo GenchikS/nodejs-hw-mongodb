@@ -32,9 +32,3 @@ userSchema.post(`save`, handleSaveError);  //  обробка помилки, я
 
 const UserCollection = model(`user`, userSchema);
 export default UserCollection;
-
-// name - string, required
-// email - string, email, unique, required
-// password - string, required
-// createdAt - дата створення
-// updatedAt - дата оновлення

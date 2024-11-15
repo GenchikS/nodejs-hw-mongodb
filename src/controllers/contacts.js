@@ -14,12 +14,19 @@ export const getContactsController = async (req, res) => {
   // console.log(sortBy);  // перевірка
   // console.log(sortOrder);  // перевірка
 
+  //  приклад використання фільтру
+  // const filter = parsePaginationParams(req.query);
+  // const { _id: userId } = req.user;
+  // filter.userId = userId;
+
+
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
   const data = await getContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
+    // filter,
   });
   res.json({
     stasus: 200,
@@ -47,9 +54,13 @@ export const postContactController = async (req, res) => {
   // console.log(req.body)   // перевірка
   // const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
   // console.log(validateResult);
-  
-  const data = await postContacts(req.body);
-    res.status(201).json({
+
+  // console.log(req.user); //  перевірка інформації про користувача, хто робить запит
+
+  const { _id: userId } = req.user; //  userId mongoose
+
+  const data = await postContacts({...req.body, userId}); //  додатково додавання userId користувача
+  res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
     data,

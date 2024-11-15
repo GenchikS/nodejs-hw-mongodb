@@ -29,6 +29,11 @@ const contactSchema = new Schema(
       default: `personal`,
       required: true,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      require: true,
+    }
   },
   {
     timestamps: true, //  додавання дати створення
