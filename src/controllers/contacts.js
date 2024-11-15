@@ -15,18 +15,18 @@ export const getContactsController = async (req, res) => {
   // console.log(sortOrder);  // перевірка
 
   //  приклад використання фільтру
-  // const filter = parsePaginationParams(req.query);
-  // const { _id: userId } = req.user;
-  // filter.userId = userId;
-
-
+  const filter = parsePaginationParams(req.query);
+  // console.log(`filter`, filter);
+  const { _id: userId } = req.user;
+  filter.userId = userId;
+  
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
   const data = await getContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
-    // filter,
+    filter,
   });
   res.json({
     stasus: 200,

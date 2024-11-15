@@ -9,7 +9,7 @@ const parseNumber = (number, defaultValue) => {
 
 export const parsePaginationParams = ({page, perPage}) => {
     const parsedPage = parseNumber(page, 1);  // дістаємо параметри сторінка 1 по default
-    const parsedPerPage = parseNumber(perPage, 20);  //  кількість елементів на сторінці 3 по default
+    const parsedPerPage = parseNumber(perPage, 3);  //  кількість елементів на сторінці 3 по default
 
     return {
         page: parsedPage,

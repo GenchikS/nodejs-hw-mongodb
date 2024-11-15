@@ -92,6 +92,8 @@ export const refreshUserSession = async ({sessionId, refreshToken}) => {
   });
 }
 
+
+export const logout = sessionId => SessionCollection.deleteOne({ _id: sessionId });  //  просто видаляємо сесію
 export const findSession = filter => SessionCollection.findOne(filter);  //  ф-ція перевірки токена чи є дана сесія
 export const findUser = filter => SessionCollection.findOne(filter);  //  ф-ція перевірки чи є ще user який відповідає данній сесії
 

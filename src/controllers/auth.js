@@ -56,3 +56,14 @@ res.json({
   },
 });
 }
+
+export const logoutController = async (req, res) => {
+  //  якщо є активна сесія, то ми передаемо id сесії і викликаємо logout
+  if (req.cookies.sessionId) {
+    await authService.logout(req.cookies.sessionId);
+  }
+  res.clearCookie("sessionId"); //  викликаємо очищення cookie
+  res.clearCookie('refreshToken');
+
+  res.status(204).send();
+}
