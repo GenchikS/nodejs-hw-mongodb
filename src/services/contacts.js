@@ -7,7 +7,7 @@ export const getContacts = async ({
   perPage = 3,
   sortBy = '_id',
   sortOrder = 'asc',
-  userId,
+  userId
 }) => {
   //  додатково дублюємо дефолтні налаштування
   const query = ContactCollection.find();
@@ -23,6 +23,7 @@ export const getContacts = async ({
 
   // const totalItems = (await ContactCollection.find()).length;
   const totalItems = await ContactCollection.find()
+    .where('userId').equals(userId)  //  добавляє довжину масиву лише з певним userId
     .merge(query)
     .countDocuments(); //  повертає відразу кількість, без виклику об'єкта та методу length
   // console.log(totalItems);  // перевірка
@@ -36,7 +37,26 @@ export const getContacts = async ({
 };
 
 
-export const getContactById = (id) => ContactCollection.findById(id);
+export const getContactById = async (id, userId) => {
+  //  додатково дублюємо дефолтні налаштування
+  const data = await ContactCollection.findById(id).where('userId').equals(userId); //  фільтрує лише ті контакти, які додав певний user
+  // console.log(`id`, typeof(id));
+  // console.log(`userId`, typeof (userId));
+  // console.log(`userId`, String(userId));  //  перевели userId в string
+  
+  if (id === String(userId)) {
+    const data = await ContactCollection.find().where('userId').equals(userId);
+    return data;
+  }
+if (!data) return ;
+  
+return data;
+};
+
+
+
+
+
 export const postContacts = (body) => ContactCollection.create(body);
 export const patchContact = (id, body) =>
   ContactCollection.findOneAndUpdate({ _id: id }, body, {

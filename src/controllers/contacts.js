@@ -1,8 +1,9 @@
 import { getContacts, getContactById, postContacts, patchContact, deleteContactById } from '../services/contacts.js'; //  логіка пошуку колекції
 import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
-import { sortByList } from '../db/models/Contact.js';
+import ContactCollection, { sortByList } from '../db/models/Contact.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+
 
 export const getContactsController = async (req, res) => {
   // console.log(req.query);  //  значення query з параметрами sourch
@@ -14,13 +15,18 @@ export const getContactsController = async (req, res) => {
   // console.log(sortBy);  // перевірка сортування за назвою
   // console.log(sortOrder);  // перевірка сортування по зростанню (asc) чи спаданню (desc)
 
-  //  приклад використання фільтру
-
+  //  для використання фільтру по певному userId при подальшій фільтрації
   const userId = req.user.userId;
   // console.log(`userId`, userId);
-  
-  // const parseFilterParams = parseFilterParams(userId);
-  //  console.log(`filterParams`, parseFilterParams);
+
+  //  додатково додавання кількості контактів в message 
+  const query = ContactCollection.find();
+  const totalItems = await ContactCollection.find()
+    .where('userId')
+    .equals(userId) //  добавляє довжину масиву лише з певним userId
+    .merge(query)
+    .countDocuments(); //  повертає відразу кількість, без виклику об'єкта та методу length
+  // console.log(totalItems);  // перевірка
 
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
   const data = await getContacts({
@@ -32,25 +38,30 @@ export const getContactsController = async (req, res) => {
   });
   res.json({
     stasus: 200,
-    message: 'Successfull find contacts',
+    message: `Successfull find ${totalItems} contacts`,
     data,
   });
 };
 
 export const getContactByIdController = async (req, res) => {
-  const { id } = req.params;
-  //  console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-  const data = await getContactById(id);
-  if (!data) {  //  умова якщо null 
-      // console.log(data);
-      throw createHttpError(404, `Contact id= ${id} not found`);
-    }
-    res.json({
-      stasus: 200,
-      message: 'Contact successfull find',
-      data: data,
-    });
+    const { id } = req.params;
+  // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
+    const userId = req.user.userId;
+//  console.log(`userId`, userId);
+
+  const data = await getContactById(id, userId);
+
+  if (!data) {
+    //  умова якщо null
+    throw createHttpError(404, `Contact id= ${id} not found`);
+  }
+  res.json({
+    stasus: 200,
+    message: `Contact id= ${id} successfull find`,
+    data: data,
+  });
 };
+
 
 export const postContactController = async (req, res) => {
   // console.log(req.body)   // перевірка
