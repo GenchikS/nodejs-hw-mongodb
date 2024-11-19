@@ -30,5 +30,5 @@ userSchema.post(`save`, handleSaveError) //  post означає. що пере�
 userSchema.pre(`findOneAndUpdate`, setUpdataSettings);  //  обробка помилки при оновленні
 userSchema.post(`save`, handleSaveError);  //  обробка помилки, якщо сталася після оновлення
 
-const UserCollection = model(`user`, userSchema);
+const UserCollection = model(`users`, userSchema);
 export default UserCollection;

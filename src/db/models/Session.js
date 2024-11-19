@@ -5,7 +5,7 @@ const sessionSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId, //  вказування збереження поля Id, т.я. в mongoose немає іншого вказування
-      ref: 'user', //  вказати звідки (з якої таблиці) брати Id, іноді необхідно вказувати
+      ref: 'users', //  вказати звідки (з якої таблиці) брати Id, іноді необхідно вказувати
       require: true,
     },
     accessToken: {

@@ -11,22 +11,24 @@ export const getContactsController = async (req, res) => {
   // console.log(`perPage`, perPage); //  перевірка
 
   const { sortBy, sortOrder } = parseSortParams(req.query, sortByList);
-  // console.log(sortBy);  // перевірка
-  // console.log(sortOrder);  // перевірка
+  // console.log(sortBy);  // перевірка сортування за назвою
+  // console.log(sortOrder);  // перевірка сортування по зростанню (asc) чи спаданню (desc)
 
   //  приклад використання фільтру
-  const filter = parsePaginationParams(req.query);
-  // console.log(`filter`, filter);
-  const { _id: userId } = req.user;
-  filter.userId = userId;
+
+  const userId = req.user.userId;
+  // console.log(`userId`, userId);
   
+  // const parseFilterParams = parseFilterParams(userId);
+  //  console.log(`filterParams`, parseFilterParams);
+
   //  при створенні роутеру шлях `contacts` необхідно прибрати, т.я. він вказаний в server.js в мідлварі
   const data = await getContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
-    filter,
+    userId,
   });
   res.json({
     stasus: 200,
@@ -57,7 +59,7 @@ export const postContactController = async (req, res) => {
 
   // console.log(req.user); //  перевірка інформації про користувача, хто робить запит
 
-  const { _id: userId } = req.user; //  userId mongoose
+  const { userId: userId } = req.user; //  userId mongoose. Передаємо ключ _id , який реєструє при створенні контакту
 
   const data = await postContacts({...req.body, userId}); //  додатково додавання userId користувача
   res.status(201).json({
