@@ -38,7 +38,6 @@ export const getContacts = async ({
 
 
 export const getContactById = async (id, userId) => {
-  //  додатково дублюємо дефолтні налаштування
   const data = await ContactCollection.findById(id).where('userId').equals(userId); //  фільтрує лише ті контакти, які додав певний user
   // console.log(`id`, typeof(id));
   // console.log(`userId`, typeof (userId));
@@ -58,9 +57,22 @@ return data;
 
 
 export const postContacts = (body) => ContactCollection.create(body);
-export const patchContact = (id, body) =>
-  ContactCollection.findOneAndUpdate({ _id: id }, body, {
-    new: true,
-  }); // new: true поренути оновлений об'єкт
-export const deleteContactById = (id) =>
-  ContactCollection.findOneAndDelete({ _id: id });  
+
+
+export const patchContact = async (id, userId, body) => {
+  const data = await ContactCollection.findById(id).where('userId').equals(userId);
+  if (data) {
+    return ContactCollection.findOneAndUpdate({ _id: id }, body, {
+      new: true,// new: true поренути оновлений об'єкт
+    })
+  }
+}; 
+
+
+export const deleteContactById = async(id, userId) =>
+{
+  const data = await ContactCollection.findById(id).where('userId').equals(userId);
+if (data) {
+    return ContactCollection.findOneAndDelete({ _id: id });
+  }
+}
