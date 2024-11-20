@@ -38,41 +38,32 @@ export const getContacts = async ({
 
 
 export const getContactById = async (id, userId) => {
-  const data = await ContactCollection.findById(id).where('userId').equals(userId); //  фільтрує лише ті контакти, які додав певний user
-  // console.log(`id`, typeof(id));
-  // console.log(`userId`, typeof (userId));
-  // console.log(`userId`, String(userId));  //  перевели userId в string
+  // const data = await ContactCollection.findById(id).where('userId').equals(userId); //  фільтрує лише ті контакти, які додав певний user
   
-  if (id === String(userId)) {
-    const data = await ContactCollection.find().where('userId').equals(userId);
+  //  спрощений варіант
+    const data = await ContactCollection.find({ userId: userId }).findOne({ _id: id }); 
+  // console.log(`data`, data);
+  if (!data) {
+    const data = await ContactCollection.find({ userId: id });
     return data;
   }
-if (!data) return ;
-  
-return data;
+  return data;
 };
-
-
-
-
 
 export const postContacts = (body) => ContactCollection.create(body);
 
 
 export const patchContact = async (id, userId, body) => {
-  const data = await ContactCollection.findById(id).where('userId').equals(userId);
-  if (data) {
-    return ContactCollection.findOneAndUpdate({ _id: id }, body, {
-      new: true,// new: true поренути оновлений об'єкт
-    })
-  }
+  // const data = await ContactCollection.findById(id).where('userId').equals(userId);
+  //  спрощений варіант
+  const data = await ContactCollection.find({userId: userId,}).findOneAndUpdate({ _id: id }, body, { new: true }); // new: true поренути оновлений об'єкт
+return data;
 }; 
 
 
 export const deleteContactById = async(id, userId) =>
 {
-  const data = await ContactCollection.findById(id).where('userId').equals(userId);
-if (data) {
-    return ContactCollection.findOneAndDelete({ _id: id });
-  }
+  // return ContactCollection.findById(id).where('userId').equals(userId);
+
+  return ContactCollection.find({ userId: userId }).findOneAndDelete({_id: id,});
 }

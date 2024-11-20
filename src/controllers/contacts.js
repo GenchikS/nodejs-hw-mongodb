@@ -44,10 +44,11 @@ export const getContactsController = async (req, res) => {
 };
 
 export const getContactByIdController = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
   // console.log(`req.params`, req.params); //  зберігаються всі параметри маршрути в req.params
-    const userId = req.user.userId;
-//  console.log(`userId`, userId);
+
+  const userId = req.user.userId;
+  //  console.log(`userId`, userId);
 
   const data = await getContactById(id, userId);
 
@@ -57,7 +58,7 @@ export const getContactByIdController = async (req, res) => {
   }
   res.json({
     stasus: 200,
-    message: `Contact id= ${id} successfull find`,
+    message: `Contact successfull find`,
     data: data,
   });
 };
@@ -82,8 +83,10 @@ export const postContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { id } = req.params;
-const userId = req.user.userId;
-
+  // console.log(`req.params`, req.params);
+  const userId = req.user.userId;
+  // console.log(`userId`, userId);
+  
   const data = await patchContact(id, userId, req.body);
     if (!data) {
       throw createHttpError(404, `Not found`);
@@ -97,7 +100,6 @@ const userId = req.user.userId;
 
 export const deleteContactByIdController = async (req, res) => {
   const { id } = req.params;
-
   const userId = req.user.userId;
   
   const data = await deleteContactById(id, userId);
