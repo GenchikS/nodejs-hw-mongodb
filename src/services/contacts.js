@@ -43,13 +43,7 @@ export const getContactById = async (id, userId) => {
   // console.log(`userId`, userId)
 
   //  спрощений варіант
-    const data = await ContactCollection.find({ userId: userId }).findOne({ _id: id }); 
-  if (!data) {
-    if (String(userId) === id) {
-      const data = await ContactCollection.find({ userId: id });
-    return data;
-    }
-  }
+    const data = await ContactCollection.findOne({_id: id, userId}); 
   return data;
 };
 
@@ -59,14 +53,12 @@ export const postContacts = (body) => ContactCollection.create(body);
 export const patchContact = async (id, userId, body) => {
   // const data = await ContactCollection.findById(id).where('userId').equals(userId);
   //  спрощений варіант
-  const data = await ContactCollection.find({userId: userId,}).findOneAndUpdate({ _id: id }, body, { new: true }); // new: true поренути оновлений об'єкт
+  const data = await ContactCollection.findOneAndUpdate({ _id: id, userId }, body, { new: true }); // new: true поренути оновлений об'єкт
 return data;
 }; 
 
 
-export const deleteContactById = async(id, userId) =>
-{
+export const deleteContactById = async(id, userId) => {
   // return ContactCollection.findById(id).where('userId').equals(userId);
-
-  return ContactCollection.find({ userId: userId }).findOneAndDelete({_id: id,});
+  return ContactCollection.findOneAndDelete({_id: id, userId, });
 }
