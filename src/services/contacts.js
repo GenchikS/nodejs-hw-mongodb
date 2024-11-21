@@ -39,13 +39,16 @@ export const getContacts = async ({
 
 export const getContactById = async (id, userId) => {
   // const data = await ContactCollection.findById(id).where('userId').equals(userId); //  фільтрує лише ті контакти, які додав певний user
-  
+  // console.log(`id`, id);
+  // console.log(`userId`, userId)
+
   //  спрощений варіант
     const data = await ContactCollection.find({ userId: userId }).findOne({ _id: id }); 
-  // console.log(`data`, data);
   if (!data) {
-    const data = await ContactCollection.find({ userId: id });
+    if (String(userId) === id) {
+      const data = await ContactCollection.find({ userId: id });
     return data;
+    }
   }
   return data;
 };
