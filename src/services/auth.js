@@ -4,10 +4,16 @@ import UserCollection from '../db/models/User.js';
 import SessionCollection from '../db/models/Session.js';
 import { randomBytes } from "crypto";  //  ф-ція створення рандомних символів
 import { accessTokenLifeTime, refreshTokenLifeTime } from '../constants/authUsers.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import * as path from "node:path";
+import { TEMPLATE_DIR } from '../constants/index.js';
+import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
 
 
+
+const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
+// console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
-
 
 //  винесли окремо ф-цію створення нових токенів, т.я. використовується повторно
 const createSession = () => {
@@ -38,7 +44,21 @@ export const registerContact = async (payload) => {
   
 
   //  прилітає payload з body з данними реєстрації користувача
-  return UserCollection.create({ ...payload, password: hashPassword }); //  реєстрація це додавання нового користувача. Ключ password хешується
+  const newUser = await UserCollection.create({ ...payload, password: hashPassword }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
+  
+  const templatesSourse = await fs.readFile(emailTemplatePath, "utf-8") //  читання шляху
+
+
+
+
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    // html: "<a>Click</a>"  //  можна використати тег
+    html: ""
+  };
+    await sendEmail(verifyEmail);  //  відправка листа
+  return newUser;
 };
 
 
@@ -46,6 +66,9 @@ export const loginContact = async ({email, password}) => {
   const user = await UserCollection.findOne({ email }); //  перевірка чи є взагалі такий користувач в колекції
   if (!user) {
     throw createHttpError(401, 'Email or password invalid');
+  }
+  if (!user.verify) {  // додаємо перевірку, якщо email не підтвержений
+    throw createHttpError(401, 'Email not verified');
   }
   const passwordCompere = bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
   if (!passwordCompere) {
