@@ -5,13 +5,13 @@ import SessionCollection from '../db/models/Session.js';
 import { randomBytes } from "crypto";  //  ф-ція створення рандомних символів
 import { accessTokenLifeTime, refreshTokenLifeTime } from '../constants/authUsers.js';
 import { sendEmail } from '../utils/sendEmail.js';
-import * as path from "node:path";
-import { TEMPLATE_DIR } from '../constants/index.js';
-import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
+// import * as path from "node:path";
+// import { TEMPLATE_DIR } from '../constants/index.js';
+// import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
 
 
 
-const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
+// const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
 
@@ -46,7 +46,7 @@ export const registerContact = async (payload) => {
   //  прилітає payload з body з данними реєстрації користувача
   const newUser = await UserCollection.create({ ...payload, password: hashPassword }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
   
-  const templatesSourse = await fs.readFile(emailTemplatePath, "utf-8") //  читання шляху
+  // const templatesSourse = await fs.readFile(emailTemplatePath, "utf-8") //  читання шляху
 
 
 
