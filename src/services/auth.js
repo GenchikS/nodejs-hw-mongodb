@@ -5,15 +5,20 @@ import SessionCollection from '../db/models/Session.js';
 import { randomBytes } from "crypto";  //  ф-ція створення рандомних символів
 import { accessTokenLifeTime, refreshTokenLifeTime } from '../constants/authUsers.js';
 import { sendEmail } from '../utils/sendEmail.js';
-// import * as path from "node:path";
-// import { TEMPLATE_DIR } from '../constants/index.js';
-// import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
+import * as path from "node:path";
+import { TEMPLATE_DIR } from '../constants/index.js';
+import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
+import Handlebars from 'handlebars';
+import {env} from "../utils/env.js"
 
 
 
-// const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
+const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
+
+const appDomain = env("APP_DOMAIN");  //  створення змінної оточення  (appDomain адреса нашого бекенду)
+
 
 //  винесли окремо ф-цію створення нових токенів, т.я. використовується повторно
 const createSession = () => {
@@ -41,23 +46,28 @@ export const registerContact = async (payload) => {
   const hashPassword = await bckrypt.hash(password, 10);
   //  приклад хешування
   // console.log('hashPassword', hashPassword); //  перевірка паролю з salt
-  
 
   //  прилітає payload з body з данними реєстрації користувача
-  const newUser = await UserCollection.create({ ...payload, password: hashPassword }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
-  
-  // const templatesSourse = await fs.readFile(emailTemplatePath, "utf-8") //  читання шляху
+  const newUser = await UserCollection.create({
+    ...payload,
+    password: hashPassword,
+  }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
 
+  const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту
+  const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
 
-
+  //  для отримання html змісту, перетворюємо шаблон на html та підставляємо правельні зменні
+  const html = template({
+    link: `${appDomain}/auth/verify?token=`, //  має бути одреса проекту та додавання токену для розпізнання
+  });
 
   const verifyEmail = {
     to: email,
-    subject: "Verify email",
+    subject: 'Verify email',
     // html: "<a>Click</a>"  //  можна використати тег
-    html: ""
+    html,  //  передаємо зміст створенного листа
   };
-    await sendEmail(verifyEmail);  //  відправка листа
+  await sendEmail(verifyEmail); //  відправка листа
   return newUser;
 };
 
