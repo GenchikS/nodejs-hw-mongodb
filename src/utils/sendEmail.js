@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
 
-const {SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD } = process.env
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM } =
+  process.env;
 
 //  створення транспорту для пошти
 const nodemailerConfig = {
@@ -16,8 +17,10 @@ const nodemailerConfig = {
 
 const transporter = nodemailer.createTransport(nodemailerConfig);
 
-export const sendEmail = async (options) => {
-  return await transporter.sendMail(options);
+export const sendEmail = data => {
+  const email = { ...data, from: SMTP_FROM };
+  
+  return transporter.sendMail(email);
 };
 
 

@@ -6,6 +6,7 @@ import { validateBody } from "../utils/validateBody.js";
 import { contactPatchSchema, contactPostSchema } from "../validation/contacts.js";
 import { isValidId } from "../middlewares/isValidId.js";
 import { authenticate } from "../middlewares/authenticate.js";
+import { upload } from "../middlewares/upload.js";
 
 const contactsRouters = Router();  //  створення пустого маршруту
 
@@ -22,6 +23,10 @@ contactsRouters.get(
 
 contactsRouters.post(
   `/`,
+  upload.single("photo"), //  очікує лише один файл в полі photo
+  // upload.array('photo', 5), //  очікує в полі photo массив до 10 файлів
+  // upload.fields([{name: `photo`, maxCount: 2}, {name: `name`, maxCount: 3}]), //  очікує в полях photo/name масив об'єктів з полями та макс. кількістью
+
   validateBody(contactPostSchema),
   ctrlWrapper(contactsControllers.postContactController),
 );

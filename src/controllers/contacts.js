@@ -65,15 +65,16 @@ export const getContactByIdController = async (req, res) => {
 
 
 export const postContactController = async (req, res) => {
-  // console.log(req.body)   // перевірка
-  // const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
+  // console.log(req.body); //  інформація про завантажений текст
+  // console.log(req.file); //  інформація про завантажений файл
+// const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
   // console.log(validateResult);
 
   // console.log(req.user); //  перевірка інформації про користувача, хто робить запит
 
   const { userId: userId } = req.user; //  userId mongoose. Передаємо ключ _id , який реєструє при створенні контакту
 
-  const data = await postContacts({...req.body, userId}); //  додатково додавання userId користувача
+  const data = await postContacts({ ...req.body, userId }); //  додатково додавання userId користувача
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
