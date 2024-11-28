@@ -9,7 +9,8 @@ import * as path from "node:path";
 import { TEMPLATE_DIR } from '../constants/index.js';
 import * as fs from "node:fs/promises";  //  необхідно для прочитання змісту файлу
 import Handlebars from 'handlebars';
-import {env} from "../utils/env.js"
+import { env } from "../utils/env.js"
+import jwt from "jsonwebtoken";
 
 
 
@@ -18,6 +19,7 @@ const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  п�
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
 
 const appDomain = env("APP_DOMAIN");  //  створення змінної оточення  (appDomain адреса нашого бекенду)
+const jwtSecret = env("JWT_SECRET");  //  читаємо JWT
 
 
 //  винесли окремо ф-цію створення нових токенів, т.я. використовується повторно
@@ -56,9 +58,11 @@ export const registerContact = async (payload) => {
   const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту
   const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
 
+
+  const token = jwt.sign({email}, jwtSecret, {expiresIn: "5min"}) //  створюємо токен. Час життя 1 година
   //  для отримання html змісту, перетворюємо шаблон на html та підставляємо правельні зменні
   const html = template({
-    link: `${appDomain}/auth/verify?token=`, //  має бути одреса проекту та додавання токену для розпізнання
+    link: `${appDomain}/auth/verify?token=${token}`, //  має бути одреса проекту та додавання токену для розпізнання
   });
 
   const verifyEmail = {
@@ -77,6 +81,7 @@ export const loginContact = async ({email, password}) => {
   if (!user) {
     throw createHttpError(401, 'Email or password invalid');
   }
+
   if (!user.verify) {  // додаємо перевірку, якщо email не підтвержений
     throw createHttpError(401, 'Email not verified');
   }
