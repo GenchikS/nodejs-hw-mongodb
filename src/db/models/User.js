@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose"
+ import { Schema, model } from "mongoose"
 import { handleSaveError, setUpdataSettings } from './hooks.js';
 import { emailRegex } from "../../constants/authUsers.js";
 
