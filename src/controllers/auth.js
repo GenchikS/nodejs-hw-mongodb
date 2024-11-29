@@ -25,6 +25,17 @@ export const registerController = async (req, res) => {
   });
 }
 
+// контролер веріфікації пошти
+export const verifyController = async (req, res) => {
+  const { token } = req.query;
+  await authService.verify(token);
+  res.json({
+    status: 200,
+    message: 'User verify successfully!',
+  })
+}
+
+
 export const loginController = async (req, res) => {
   // const session = await authService.loginContact(req.body);
   // console.log(session); //  перевірка
@@ -64,16 +75,22 @@ export const logoutController = async (req, res) => {
   }
   res.clearCookie("sessionId"); //  викликаємо очищення cookie
   res.clearCookie('refreshToken');
-
   res.status(204).send();
 }
 
 
-export const requestResetEmailController = async (req, res) => {
-  await authService.requestResetToken(req.body.email);
+export const sendRessetEmailController = async (req, res) => {
+  // const { email } = req.body;
+  // console.log(`email`, email);
+  await authService.ressetEmail(req.body);
   res.json({
-    message: 'Reset password email was successfully sent!',
+    message: 'Reset password email has been successfully sent.',
     status: 200,
     data: {},
-  });
+})
 }
+
+export const sendNewPasswordController = async (req, res) => {
+
+}
+

@@ -11,16 +11,18 @@ import * as fs from "node:fs/promises";  //  необхідно для проч�
 import Handlebars from 'handlebars';
 import { env } from "../utils/env.js"
 import jwt from "jsonwebtoken";
-
-
+import exp from 'constants';
 
 const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
+const ressetEmailTemplatePath = path.join(TEMPLATE_DIR, 'resset-password.html');
+
+
 
 const appDomain = env("APP_DOMAIN");  //  створення змінної оточення  (appDomain адреса нашого бекенду)
 const jwtSecret = env('JWT_SECRET');  //  читаємо JWT
-const smtpFrom = env("SMTP_FROM");
+// const smtpFrom = env("SMTP_FROM");
 
 
 //  винесли окремо ф-цію створення нових токенів, т.я. використовується повторно
@@ -54,35 +56,28 @@ export const registerContact = async (payload) => {
   const newUser = await UserCollection.create({
     ...payload,
     password: hashPassword,
-    verify: true,
   }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
 
-  const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту
+  const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту та перетворення в utf-8
   const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
 
-
-  const token = jwt.sign({ email }, jwtSecret, { expiresIn: "5m" }); //  створюємо токен. Час життя 1 година
+  const token = jwt.sign({ email }, jwtSecret, { expiresIn: '5m' }); //  створюємо токен. Час життя 1 година
   // console.log('token', token);
   // const decodeToken = jwt.decode(token)
   // console.log('decodeToken', decodeToken);
 
-
-
-
   //  для отримання html змісту, перетворюємо шаблон на html та підставляємо правельні зменні
   const html = template({
-    link: `${appDomain}/auth/verify?token=${token}` //  має бути одреса проекту та додавання токену для розпізнання
+    link: `${appDomain}/auth/verify?token=${token}`, //  має бути одреса проекту та додавання токену для розпізнання
   });
-
-  console.log('html', html);
+// console.log('html', html);
 
   const verifyEmail = {
-    // from: env{ SMTP_FROM },
     to: email,
     subject: 'Verify email',
     //   // html: "<a>Click</a>"  //  можна використати тег
-    html,  //  передаємо зміст створенного листа
-};
+    html, //  передаємо зміст створенного листа
+  };
 
   await sendEmail(verifyEmail); //  відправка листа
   // console.log('verifyEmail', verifyEmail);
@@ -90,44 +85,20 @@ export const registerContact = async (payload) => {
 };
 
 
-
-
-export const requestResetToken = async (email) => {
-  const user = await UserCollection.findOne({ email });
-  if (!user) {
-    throw createHttpError(404, 'User not found');
+// робимо перевірку валідності токену та реєстрацію verify: true
+export const verify = async token => {
+  try {
+    const { email } = jwt.verify(token, jwtSecret); //  якщо співпадає, токен правельний, не закінчилася дія, то повертається email з юзером
+    const user = await UserCollection.findOne({ email }); // знаходимо користувача з таким email
+    // console.log(`user`, user);
+    if (!user) {
+      throw createHttpError(404, `${email} not found`);
+    }
+    return await UserCollection.findByIdAndUpdate(user._id, { verify: true }); //  якщо знаходимо email, то змінюємо verify: true юзера
+    } catch (error) {
+    throw createHttpError(401, error.message);
   }
-  const resetToken = jwt.sign({
-    sub: user.id,
-    email,
-  },
-    jwtSecret,
-    {
-    expiresIn: (`5m`),
-  }
-  )
- 
-await sendEmail({
-  from: smtpFrom,
-  to: email,
-  subject: 'Reset your password',
-  html: `<p>Click <a href="${resetToken}">here</a> to reset your password!</p>`,
-});
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 export const loginContact = async ({email, password}) => {
@@ -183,6 +154,49 @@ export const refreshUserSession = async ({sessionId, refreshToken}) => {
     ...newSession,
   });
 }
+
+export const ressetEmail = async (payload) => {
+try {
+    const { email } = payload;
+    const emailUser = await UserCollection.findOne({ email });
+    // console.log('emailUser', emailUser);
+    if (!emailUser) {
+      throw createHttpError(404, `${email} not found`);
+    }
+
+    const templatesSourse = await fs.readFile(ressetEmailTemplatePath, `utf-8`);
+    const tamplate = Handlebars.compile(templatesSourse);
+
+    const token = jwt.sign({ email }, jwtSecret, { expiresIn: `5m` });
+    // console.log(`token`, token);
+
+    const html = tamplate({
+      link: `${appDomain}/reset-password?token=${token}`,
+    });
+
+    // console.log('html', html);
+
+    const ressetPassword = {
+      to: email,
+      subject: 'Resset password email',
+      html, //  передаємо зміст створенного листа
+    };
+
+    await sendEmail(ressetPassword);
+    return; 
+} catch (error) {
+  throw createHttpError(500, `Failed to send the email, please try again later.`,
+  );
+}
+
+
+
+
+};
+
+
+
+
 
 
 export const logout = sessionId => SessionCollection.deleteOne({ _id: sessionId });  //  просто видаляємо сесію
