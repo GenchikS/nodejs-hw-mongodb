@@ -1,6 +1,6 @@
 import * as path from "node:path";
 
-// export const TEMPLATE_DIR = path.resolve("src", "templates");
+export const TEMPLATE_DIR = path.resolve("src", "templates");
 
 export const TEMP_DIR = path.resolve("temp")//  абсолютний шлях до папки temp
 export const UPLOAD_DIR = path.resolve("uploads")//  абсолютний шлях до папки uploads
