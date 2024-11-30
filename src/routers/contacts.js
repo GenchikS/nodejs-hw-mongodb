@@ -17,32 +17,18 @@ contactsRouters.get(
   ctrlWrapper(contactsControllers.getContactsController),
 );  //  необхідно звернутися до певной ф-ції маршруту  виклик ф-ції не робиться
 
-contactsRouters.get(
-  `/:id`, isValidId, ctrlWrapper(contactsControllers.getContactByIdController),
+contactsRouters.get(`/:id`, isValidId, ctrlWrapper(contactsControllers.getContactByIdController),
 );
 
-contactsRouters.post(
-  `/`,
-  upload.single("photo"), //  очікує лише один файл в полі photo
-  // upload.array('photo', 5), //  очікує в полі photo массив до 10 файлів
-  // upload.fields([{name: `photo`, maxCount: 2}, {name: `name`, maxCount: 3}]), //  очікує в полях photo/name масив об'єктів з полями та макс. кількістью
 
-  validateBody(contactPostSchema),
-  ctrlWrapper(contactsControllers.postContactController),
+// upload.array('photo', 5), //  очікує в полі photo массив до 10 файлів
+// upload.fields([{name: `photo`, maxCount: 2}, {name: `name`, maxCount: 3}]), //  очікує в полях photo/name масив об'єктів з полями та макс. кількістью
+contactsRouters.post(`/`, upload.single("photo"), //  очікує лише один файл в полі photo, все інше буде текст
+    validateBody(contactPostSchema),ctrlWrapper(contactsControllers.postContactController),
 );
 // validateBody перевіряє схему запиту та валідує
 
-contactsRouters.patch(
-  `/:id`,
-  isValidId,
-  validateBody(contactPatchSchema),
-  ctrlWrapper(contactsControllers.patchContactController),
-);
-
-contactsRouters.delete(
-  `/:id`,
-  isValidId,
-  ctrlWrapper(contactsControllers.deleteContactByIdController),
-);
+contactsRouters.patch(`/:id`, isValidId, validateBody(contactPatchSchema), ctrlWrapper(contactsControllers.patchContactController), );
+contactsRouters.delete(`/:id`, isValidId, ctrlWrapper(contactsControllers.deleteContactByIdController), );
 
 export default contactsRouters;

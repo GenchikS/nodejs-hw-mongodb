@@ -18,9 +18,11 @@ export const setupServer = () => {
   const app = express();
 
   app.use(cors());
-  app.use(express.json());
-  app.use(cookieParser());  //  мідлвара для cookies
+  app.use(express.json()); //  перевіряє всі мідлвари на наявність заголовку Content-Type. Якщо буде не json, то пропускає
+  app.use(cookieParser()); //  мідлвара для cookies
+  app.use(express.static("upload")) //  якщо прийде запит на віддачу файлу, шукати його в папці upload
 
+  //  MultiPart / form - data; 
   // app.use(
   //   pino({
   //     transport: {

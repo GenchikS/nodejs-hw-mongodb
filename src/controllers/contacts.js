@@ -3,6 +3,8 @@ import createHttpError from 'http-errors';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import ContactCollection, { sortByList } from '../db/models/Contact.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import * as path from "node:path";
 
 
 export const getContactsController = async (req, res) => {
@@ -67,14 +69,21 @@ export const getContactByIdController = async (req, res) => {
 export const postContactController = async (req, res) => {
   // console.log(req.body); //  інформація про завантажений текст
   // console.log(req.file); //  інформація про завантажений файл
-// const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
+  
+  // const validateResult = contactPostSchema.validate(req.body)  //  отримання value об'єкту з полями вводу
   // console.log(validateResult);
 
   // console.log(req.user); //  перевірка інформації про користувача, хто робить запит
 
   const { userId: userId } = req.user; //  userId mongoose. Передаємо ключ _id , який реєструє при створенні контакту
 
-  const data = await postContacts({ ...req.body, userId }); //  додатково додавання userId користувача
+  let photo = null;  //  пуста
+  if (req.file) {
+    await saveFileToUploadDir(req.file);  //  якщо приходить файл, то передаємо для переміщення
+    photo = path.join(req.file.filename);  //  передаємо відносний шлях в корінь проєкту в папку uploads (на випадок зміни шляху). Папку uploads не вказувати
+}
+
+  const data = await postContacts({ ...req.body, photo, userId }); //  додатково додавання userId користувача та шлях
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
