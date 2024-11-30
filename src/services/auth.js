@@ -16,7 +16,7 @@ import exp from 'constants';
 const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
-const ressetEmailTemplatePath = path.join(TEMPLATE_DIR, 'resset-password.html');
+const ressetEmailTemplatePath = path.join(TEMPLATE_DIR, 'reset-password.html');
 
 
 
@@ -61,7 +61,7 @@ export const registerContact = async (payload) => {
   const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту та перетворення в utf-8
   const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
 
-  const token = jwt.sign({ email }, jwtSecret, { expiresIn: '5m' }); //  створюємо токен. Час життя 1 година
+  const token = jwt.sign({ email }, jwtSecret, { expiresIn: '5m' }); //  створюємо токен. Час життя 5хв
   // console.log('token', token);
   // const decodeToken = jwt.decode(token)
   // console.log('decodeToken', decodeToken);
@@ -110,11 +110,10 @@ export const loginContact = async ({email, password}) => {
   if (!user.verify) {  // додаємо перевірку, якщо email не підтвержений
     throw createHttpError(401, 'Email not verified');
   }
-  const passwordCompere = bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
+  const passwordCompere = await bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
   if (!passwordCompere) {
       throw createHttpError(401, 'Email or password invalid');
   }
-  
   //   console.log('passwordCompere', passwordCompere);
   //   const passwordCompere2 = await bckrypt.compare('111111', user.password);
   // console.log('passwordCompere2', passwordCompere2);  //  false
@@ -156,11 +155,12 @@ export const refreshUserSession = async ({sessionId, refreshToken}) => {
 }
 
 export const ressetEmail = async (payload) => {
-try {
+  
+  try {
     const { email } = payload;
-    const emailUser = await UserCollection.findOne({ email });
-    // console.log('emailUser', emailUser);
-    if (!emailUser) {
+    const user = await UserCollection.findOne( {email} );
+    console.log('user', user);
+    if (!user) {
       throw createHttpError(404, `${email} not found`);
     }
 
@@ -183,21 +183,50 @@ try {
     };
 
     await sendEmail(ressetPassword);
-    return; 
-} catch (error) {
-  throw createHttpError(500, `Failed to send the email, please try again later.`,
-  );
-}
+    return;
 
-
-
-
+  } catch (error) {
+    throw createHttpError(
+      500,
+      `Failed to send the email, please try again later.`,
+    );
+  }
 };
 
 
+export const registerNewPassword = async (payload) => {
+  // console.log(`payload`, payload);
+  const { token, password} = payload;
+  let entries;
+  // console.log(`token`, token);
+  // console.log(`password`, password);
+  try {
+    entries = jwt.verify(token, jwtSecret);
+    // console.log(`entries`, entries.email);
+    const { email } = entries;
+    const user = await UserCollection.findOne({
+      email: entries.email,
+      _id: entries.sub,
+    });
+    // console.log(`user`, user);
+    if (!user) {
+      throw createHttpError(404, `${email} not found`);
+    }
+    const hashPassword = await bckrypt.hash(password, 10);
 
+//  зміна пароля та оновлення існуючого контакту
+    const newUser = await UserCollection.updateOne(
+      { _id: user._id },
+      { password: hashPassword },
+    );
+  return newUser;
+      
+  }catch (error) {
+    if (error instanceof Error) throw createHttpError(401, error.message);
+    throw error;
+  }
 
-
+}
 
 export const logout = sessionId => SessionCollection.deleteOne({ _id: sessionId });  //  просто видаляємо сесію
 export const findSession = filter => SessionCollection.findOne(filter);  //  ф-ція перевірки токена чи є дана сесія

@@ -5,7 +5,7 @@ import { validateBody } from '../utils/validateBody.js';
 import {
   authRegisterSchema,
   authLoginSchema,
-  ressetPasswordSchema,
+  resetPasswordSchema,
   newPasswordSchema,
 } from '../validation/auth.js';
 
@@ -17,7 +17,7 @@ authRouter.post(`/login`, validateBody(authLoginSchema), ctrlWrapper(authControl
 authRouter.post(`/refresh`, ctrlWrapper(authControllers.refreshSessionController)); 
 authRouter.post(`/logout`, ctrlWrapper(authControllers.logoutController));
 
-authRouter.post(`/send-reset-email`, validateBody(ressetPasswordSchema), ctrlWrapper(authControllers.sendRessetEmailController));
+authRouter.post(`/send-reset-email`, validateBody(resetPasswordSchema), ctrlWrapper(authControllers.sendResetEmailController));
 authRouter.post(`/reset-pwd`, validateBody(newPasswordSchema), ctrlWrapper(authControllers.sendNewPasswordController));
 
 export default authRouter;
