@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import pino from 'pino-http';
+// import pino from 'pino-http';
 import { env } from "./utils/env.js"
 
 import contactsRouters from "./routers/contacts.js"

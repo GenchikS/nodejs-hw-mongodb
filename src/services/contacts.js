@@ -50,10 +50,10 @@ export const getContactById = async (id, userId) => {
 export const postContacts = (body) => ContactCollection.create(body);
 
 
-export const patchContact = async (id, userId, body) => {
-  // const data = await ContactCollection.findById(id).where('userId').equals(userId);
+export const patchContact = async (id, userId, photo, body) => {
+// const data = await ContactCollection.findById(id).where('userId').equals(userId);
   //  спрощений варіант
-  const data = await ContactCollection.findOneAndUpdate({ _id: id, userId }, body, { new: true }); // new: true поренути оновлений об'єкт
+  const data = await ContactCollection.findOneAndUpdate({ _id: id, userId }, {photo: photo}, body, { new: true }); // new: true повернути оновлений об'єкт
 return data;
 }; 
 

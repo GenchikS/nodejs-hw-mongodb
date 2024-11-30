@@ -5,7 +5,11 @@ import ContactCollection, { sortByList } from '../db/models/Contact.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import * as path from "node:path";
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { env } from '../utils/env.js';
 
+
+const enableCloudnary = env("ENABLE_CLOUDNARY");
 
 export const getContactsController = async (req, res) => {
   // console.log(req.query);  //  значення query з параметрами sourch
@@ -78,9 +82,14 @@ export const postContactController = async (req, res) => {
   const { userId: userId } = req.user; //  userId mongoose. Передаємо ключ _id , який реєструє при створенні контакту
 
   let photo = null;  //  пуста
+
   if (req.file) {
-    await saveFileToUploadDir(req.file);  //  якщо приходить файл, то передаємо для переміщення
-    photo = path.join(req.file.filename);  //  передаємо відносний шлях в корінь проєкту в папку uploads (на випадок зміни шляху). Папку uploads не вказувати
+    if (enableCloudnary === "true") {
+      photo = await saveFileToCloudinary(req.file, "photos")
+    } else {
+      await saveFileToUploadDir(req.file); //  якщо приходить файл, то передаємо для переміщення
+      photo = path.join(req.file.filename); //  передаємо відносний шлях в корінь проєкту в папку uploads (на випадок зміни шляху). Папку uploads не вказувати
+    }
 }
 
   const data = await postContacts({ ...req.body, photo, userId }); //  додатково додавання userId користувача та шлях
@@ -96,15 +105,32 @@ export const patchContactController = async (req, res) => {
   // console.log(`req.params`, req.params);
   const userId = req.user.userId;
   // console.log(`userId`, userId);
+
+  let photo = null; //  пуста
+
+  if (req.file) {
+    if (enableCloudnary === 'true') {
+      photo = await saveFileToCloudinary(req.file, 'photos');
+    } else {
+      await saveFileToUploadDir(req.file); //  якщо приходить файл, то передаємо для переміщення
+      photo = path.join(req.file.filename); //  передаємо відносний шлях в корінь проєкту в папку uploads (на випадок зміни шляху). Папку uploads не вказувати
+    }
+  }
   
-  const data = await patchContact(id, userId, req.body);
+  const data = await patchContact(id, userId, photo, req.body);
+  // console.log(`data`, data.photo);
+  // console.log(`photo`, photo);
+  // const 
+
     if (!data) {
       throw createHttpError(404, `Not found`);
     }
-    res.json({
-      status: 200,
-      message: `Successfully patched a contact!`,
-      data,
+  res.json({
+    status: 200,
+    message: `Successfully patched a contact!`,
+    data: {
+      
+    },
     });
 };
 

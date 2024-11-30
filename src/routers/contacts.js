@@ -28,7 +28,14 @@ contactsRouters.post(`/`, upload.single("photo"), //  очікує лише од
 );
 // validateBody перевіряє схему запиту та валідує
 
-contactsRouters.patch(`/:id`, isValidId, validateBody(contactPatchSchema), ctrlWrapper(contactsControllers.patchContactController), );
+contactsRouters.patch(
+  `/:id`,
+  isValidId,
+  upload.single('photo'),
+  validateBody(contactPatchSchema),
+  ctrlWrapper(contactsControllers.patchContactController),
+);
+
 contactsRouters.delete(`/:id`, isValidId, ctrlWrapper(contactsControllers.deleteContactByIdController), );
 
 export default contactsRouters;
