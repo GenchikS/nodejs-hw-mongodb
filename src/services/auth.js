@@ -11,7 +11,6 @@ import * as fs from "node:fs/promises";  //  необхідно для проч�
 import Handlebars from 'handlebars';
 import { env } from "../utils/env.js"
 import jwt from "jsonwebtoken";
-import exp from 'constants';
 
 const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
