@@ -18,11 +18,11 @@ const userSchema = new Schema(
       type: String,
       require: true,
     },
-    verify: {  //  додаємо поле для перевірки реєстрації
-      type: Boolean,
-      default: false,
-      require: true
-    }
+    // verify: {  //  додаємо поле для перевірки реєстрації
+    //   type: Boolean,
+    //   default: false,
+    //   require: true
+    // }
   },
   {
     timestamps: true, //  додавання дати створення

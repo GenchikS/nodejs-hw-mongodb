@@ -85,19 +85,19 @@ export const registerContact = async (payload) => {
 
 
 // робимо перевірку валідності токену та реєстрацію verify: true
-export const verify = async token => {
-  try {
-    const { email } = jwt.verify(token, jwtSecret); //  якщо співпадає, токен правельний, не закінчилася дія, то повертається email з юзером
-    const user = await UserCollection.findOne({ email }); // знаходимо користувача з таким email
-    // console.log(`user`, user);
-    if (!user) {
-      throw createHttpError(404, `${email} not found`);
-    }
-    return await UserCollection.findByIdAndUpdate(user._id, { verify: true }); //  якщо знаходимо email, то змінюємо verify: true юзера
-    } catch (error) {
-    throw createHttpError(401, error.message);
-  }
-}
+// export const verify = async token => {
+//   try {
+//     const { email } = jwt.verify(token, jwtSecret); //  якщо співпадає, токен правельний, не закінчилася дія, то повертається email з юзером
+//     const user = await UserCollection.findOne({ email }); // знаходимо користувача з таким email
+//     // console.log(`user`, user);
+//     if (!user) {
+//       throw createHttpError(404, `${email} not found`);
+//     }
+//     return await UserCollection.findByIdAndUpdate(user._id, { verify: true }); //  якщо знаходимо email, то змінюємо verify: true юзера
+//     } catch (error) {
+//     throw createHttpError(401, error.message);
+//   }
+// }
 
 
 export const loginContact = async ({email, password}) => {
@@ -106,10 +106,11 @@ export const loginContact = async ({email, password}) => {
     throw createHttpError(401, 'Email or password invalid');
   }
 
-  if (!user.verify) {  // додаємо перевірку, якщо email не підтвержений
-    throw createHttpError(401, 'Email not verified');
-  }
-  const passwordCompere = await bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
+  // if (!user.verify) {  // додаємо перевірку, якщо email не підтвержений
+  //   throw createHttpError(401, 'Email not verified');
+  // }
+
+  const passwordCompere = bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
   if (!passwordCompere) {
       throw createHttpError(401, 'Email or password invalid');
   }

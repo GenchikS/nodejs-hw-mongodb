@@ -12,7 +12,7 @@ import {
 
 const authRouter = Router();
 authRouter.post(`/register`, validateBody(authRegisterSchema), ctrlWrapper(authControllers.registerController));
-authRouter.get(`/verify`, ctrlWrapper(authControllers.verifyController));
+// authRouter.get(`/verify`, ctrlWrapper(authControllers.verifyController));
 authRouter.post(`/login`, validateBody(authLoginSchema), ctrlWrapper(authControllers.loginController));
 authRouter.post(`/refresh`, ctrlWrapper(authControllers.refreshSessionController)); 
 authRouter.post(`/logout`, ctrlWrapper(authControllers.logoutController));

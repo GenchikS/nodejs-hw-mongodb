@@ -26,14 +26,14 @@ export const registerController = async (req, res) => {
 }
 
 // контролер веріфікації пошти
-export const verifyController = async (req, res) => {
-  const { token } = req.query;
-  await authService.verify(token);
-  res.json({
-    status: 200,
-    message: 'User verify successfully!',
-  })
-}
+// export const verifyController = async (req, res) => {
+//   const { token } = req.query;
+//   await authService.verify(token);
+//   res.json({
+//     status: 200,
+//     message: 'User verify successfully!',
+//   })
+// }
 
 
 export const loginController = async (req, res) => {
