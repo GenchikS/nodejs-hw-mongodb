@@ -37,12 +37,11 @@ export const registerController = async (req, res) => {
 
 
 export const loginController = async (req, res) => {
-  // const session = await authService.loginContact(req.body);
+  
+  const session = await authService.loginContact(req.body); //  можна достати через деструктурізацію
   // console.log(session); //  перевірка
-  const session =
-    await authService.loginContact(req.body);  //  можна достати через деструктурізацію
-    
-  setupSession(res, session)
+
+  setupSession(res, session);
 
   res.json({
     status: 200,

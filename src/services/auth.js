@@ -57,28 +57,28 @@ export const registerContact = async (payload) => {
     password: hashPassword,
   }); //  реєстрація це додавання нового користувача до бази. Ключ password хешується
 
-  const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту та перетворення в utf-8
-  const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
+  // const templatesSourse = await fs.readFile(emailTemplatePath, 'utf-8'); //  читання шляху до html тексту та перетворення в utf-8
+  // const template = Handlebars.compile(templatesSourse); //  передаємо текст, створюємо Handlebars об'єкт template
 
-  const token = jwt.sign({ email }, jwtSecret, { expiresIn: '5m' }); //  створюємо токен. Час життя 5хв
+  // const token = jwt.sign({ email }, jwtSecret, { expiresIn: '5m' }); //  створюємо токен. Час життя 5хв
   // console.log('token', token);
   // const decodeToken = jwt.decode(token)
   // console.log('decodeToken', decodeToken);
 
   //  для отримання html змісту, перетворюємо шаблон на html та підставляємо правельні зменні
-  const html = template({
-    link: `${appDomain}/auth/verify?token=${token}`, //  має бути одреса проекту та додавання токену для розпізнання
-  });
-// console.log('html', html);
+//   const html = template({
+//     link: `${appDomain}/auth/verify?token=${token}`, //  має бути одреса проекту та додавання токену для розпізнання
+//   });
+// // console.log('html', html);
 
-  const verifyEmail = {
-    to: email,
-    subject: 'Verify email',
-    //   // html: "<a>Click</a>"  //  можна використати тег
-    html, //  передаємо зміст створенного листа
-  };
+//   const verifyEmail = {
+//     to: email,
+//     subject: 'Verify email',
+//     //   // html: "<a>Click</a>"  //  можна використати тег
+//     html, //  передаємо зміст створенного листа
+//   };
 
-  await sendEmail(verifyEmail); //  відправка листа
+  // await sendEmail(verifyEmail); //  відправка листа
   // console.log('verifyEmail', verifyEmail);
   return newUser;
 };
@@ -110,10 +110,12 @@ export const loginContact = async ({email, password}) => {
   //   throw createHttpError(401, 'Email not verified');
   // }
 
-  const passwordCompere = bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
+  const passwordCompere = await bckrypt.compare(password, user.password); //  перевірка введеного паралю password з хешировонним. Якщо збігається, то повернеться true
   if (!passwordCompere) {
       throw createHttpError(401, 'Email or password invalid');
   }
+// console.log(`passwordCompere`, passwordCompere);
+
   //   console.log('passwordCompere', passwordCompere);
   //   const passwordCompere2 = await bckrypt.compare('111111', user.password);
   // console.log('passwordCompere2', passwordCompere2);  //  false
@@ -159,7 +161,7 @@ export const ressetEmail = async (payload) => {
   try {
     const { email } = payload;
     const user = await UserCollection.findOne( {email} );
-    console.log('user', user);
+    // console.log('user', user);
     if (!user) {
       throw createHttpError(404, `${email} not found`);
     }
@@ -196,36 +198,41 @@ export const ressetEmail = async (payload) => {
 
 export const registerNewPassword = async (payload) => {
   // console.log(`payload`, payload);
-  const { token, password} = payload;
+  const { token, password } = payload;
   let entries;
   // console.log(`token`, token);
   // console.log(`password`, password);
   try {
     entries = jwt.verify(token, jwtSecret);
-    // console.log(`entries`, entries.email);
-    const { email } = entries;
-    const user = await UserCollection.findOne({
-      email: entries.email,
-      _id: entries.sub,
-    });
-    // console.log(`user`, user);
-    if (!user) {
-      throw createHttpError(404, `${email} not found`);
-    }
-    const hashPassword = await bckrypt.hash(password, 10);
 
-//  зміна пароля та оновлення існуючого контакту
-    const newUser = await UserCollection.updateOne(
-      { _id: user._id },
-      { password: hashPassword },
-    );
-  return newUser;
-      
-  }catch (error) {
+  } catch (error) {
     if (error instanceof Error) throw createHttpError(401, error.message);
     throw error;
   }
 
+  console.log(`entries.email`, entries.email);
+
+
+  const user = await UserCollection.findOne({
+    email: entries.email,
+  });
+  console.log(`user`, user);
+
+  if (!user) {
+    throw createHttpError(404, `${entries.email} not found`);
+  }
+  const hashPassword = await bckrypt.hash(password, 10);
+
+  //  зміна пароля та оновлення існуючого контакту
+  const newUser = await UserCollection.updateOne(
+    { _id: user._id },
+    { password: hashPassword },
+  );
+
+  console.log(`newUser`, newUser);
+  console.log(`password`, password);
+
+  return newUser;
 }
 
 export const logout = sessionId => SessionCollection.deleteOne({ _id: sessionId });  //  просто видаляємо сесію

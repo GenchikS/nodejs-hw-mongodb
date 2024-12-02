@@ -116,22 +116,20 @@ export const patchContactController = async (req, res) => {
       photo = path.join(req.file.filename); //  передаємо відносний шлях в корінь проєкту в папку uploads (на випадок зміни шляху). Папку uploads не вказувати
     }
   }
-  
-  const data = await patchContact(id, userId, photo, req.body);
-  // console.log(`data`, data.photo);
+  const body = req.body;
+  // console.log(`body`, body);
+  const data = await patchContact(id, userId, photo, body);
+// console.log(`data`, data.photo);
   // console.log(`photo`, photo);
-  // const 
 
-    if (!data) {
-      throw createHttpError(404, `Not found`);
-    }
+  if (!data) {
+    throw createHttpError(404, `Not found`);
+  }
   res.json({
     status: 200,
     message: `Successfully patched a contact!`,
-    data: {
-      
-    },
-    });
+    data: data,
+  });
 };
 
 export const deleteContactByIdController = async (req, res) => {
