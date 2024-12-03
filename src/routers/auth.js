@@ -3,7 +3,7 @@ import * as authControllers from "../controllers/auth.js";
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../utils/validateBody.js';
 import {
-  authRegisterSchema,
+  // authRegisterSchema,  //  необхідно для верифікації через пошту
   authLoginSchema,
   resetPasswordSchema,
   newPasswordSchema,

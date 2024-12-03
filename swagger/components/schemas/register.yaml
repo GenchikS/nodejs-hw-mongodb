@@ -1,0 +1,18 @@
+type: object
+required:
+  - name
+  - phoneNumber
+  - email
+properties:
+  name:
+    description: "Registered contacts name"
+    type: string
+    example: 'Joy First'
+  email:
+    description: "Registered contacts email"
+    type: string
+    example: 'world@gmail.com'
+  password:
+    description: "Registered contacts password"
+    type: number
+    example: '12345' 
