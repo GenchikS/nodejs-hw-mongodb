@@ -12,7 +12,7 @@ import Handlebars from 'handlebars';
 import { env } from "../utils/env.js"
 import jwt from "jsonwebtoken";
 
-const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
+// const emailTemplatePath = path.join(TEMPLATE_DIR, "verify-email.html");  //  прописуємо шлях до папки шаблону
 // console.log(emailTemplatePath)  //  перевірка шляху
 // console.log(randomBytes(30).toString("base64"));  //  приклад створення рандомних символів та перетворення їх в строку з кодувавнням "base64"
 const ressetEmailTemplatePath = path.join(TEMPLATE_DIR, 'reset-password.html');
