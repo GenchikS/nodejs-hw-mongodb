@@ -12,7 +12,7 @@ requestBody:
         type: object
         required:
           - token
-          - email
+          - password
         properties:
           token:
             description: "Token with email"

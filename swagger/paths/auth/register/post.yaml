@@ -12,7 +12,7 @@ requestBody:
         type: object
         required:
           - name
-          - phoneNumber
+          - password
           - email
         properties:
           name:

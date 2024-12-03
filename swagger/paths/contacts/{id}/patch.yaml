@@ -8,7 +8,6 @@ security:
 parameters:
   - in: path
     name: id
-    required: true
     schema:
       type: string
       example: '65ca67e7ae7f10c88b598384'
@@ -17,12 +16,6 @@ requestBody:
     multipart/form-data:
       schema:
         type: object
-        required:
-          - name
-          - phoneNumber
-          - email
-          - isFavourite
-          - contactType
         properties:
           name:
             description: "Contact name"
@@ -40,7 +33,6 @@ requestBody:
             description: 'Contact is favourite'
             type: boolean
             example: 'true'
-
           contactType:
             description: "Contact type"
             type: string

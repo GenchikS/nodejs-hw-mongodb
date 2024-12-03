@@ -7,26 +7,6 @@ security:
   - bearerAuth: []
 parameters:
   - in: query
-    name: name
-    schema:
-      type: string
-    example: Joy First
-  - in: query
-    name: phoneNumber
-    schema:
-      type: string
-    example: +3805011111111
-  - in: query
-    name: email
-    schema:
-      type: string
-    example: world@gmail.com
-  - in: query
-    name: isFavourite
-    schema:
-      type: boolean
-    example: true
-  - in: query
     name: page
     schema:
       type: integer
@@ -49,15 +29,10 @@ parameters:
       enum: ['asc', 'desc']
       example: 'asc'
   - in: query
-    name: contactType
+    name: userId
     schema:
       type: string
-      enum: ['work', 'home', 'personal']
-      example: personal
-  - in: query
-    name: photo
-    schema:
-      type: string
+      example: '65ca67e7ae7f10c88b598384'
 responses:
   '200':
     description: Successfully found contacts!
