@@ -49,6 +49,6 @@ responses:
               type: object
               $ref: '../../../components/schemas/register.yaml'
   '409':
-    $ref: '../../../components/responses/409.yaml'
+    $ref: '../../../components/responses/user/409.yaml'
   '500':
     $ref: '../../../components/responses/500.yaml'

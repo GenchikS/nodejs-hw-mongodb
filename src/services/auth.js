@@ -210,13 +210,13 @@ export const registerNewPassword = async (payload) => {
     throw error;
   }
 
-  console.log(`entries.email`, entries.email);
+  // console.log(`entries.email`, entries.email);
 
 
   const user = await UserCollection.findOne({
     email: entries.email,
   });
-  console.log(`user`, user);
+  // console.log(`user`, user);
 
   if (!user) {
     throw createHttpError(404, `${entries.email} not found`);
@@ -228,9 +228,8 @@ export const registerNewPassword = async (payload) => {
     { _id: user._id },
     { password: hashPassword },
   );
-
-  console.log(`newUser`, newUser);
-  console.log(`password`, password);
+  // console.log(`newUser`, newUser);
+  // console.log(`password`, password);
 
   return newUser;
 }

@@ -12,7 +12,7 @@ properties:
     description: "Registered contacts email"
     type: string
     example: 'world@gmail.com'
-  password:
-    description: "Registered contacts password"
-    type: number
-    example: '12345' 
+  _id:
+    description: "Register contacts id"
+    type: string
+    example: 65e4decdd286b30065d54af9 
